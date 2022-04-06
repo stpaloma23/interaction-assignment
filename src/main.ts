@@ -22,13 +22,14 @@ let plane: THREE.Mesh;
 let exampleModel: THREE.Group;
 let exampleTexture: THREE.Texture;
 
-let conPos = 30;
+let conPos = 0;
 let colorPalette = [0xA7226E,0xEC2049,0xF26B38,0xF7DB4F,0x2F9599];
 let colorpos = 0;
+let icecreamPos = 20;
 
 let pointer: THREE.Vector2;
 let raycaster: THREE.Raycaster;
-let isShiftDown: Boolean = false;
+
 
 function main() {
     initScene();
@@ -90,7 +91,7 @@ function initScene() {
     
 
     // https://stackoverflow.com/questions/27620586/a-sphere-with-texture-in-three-js
-    const geometry = new THREE.ConeGeometry( 6, 20,100);
+    const geometry = new THREE.ConeGeometry( 10, 30,100);
     const material = new THREE.MeshPhongMaterial( {color: 0xD4BBB1,
         shininess: 100} );
     const cone = new THREE.Mesh( geometry, material );
@@ -109,32 +110,41 @@ function initListeners() {
         const { key } = event;
 
         switch (key) {
+
             case 'c':
-                const geometry = new THREE.ConeGeometry( 6, 20,100);
+                const geometry = new THREE.ConeGeometry( 10, 30,100);
                 const material = new THREE.MeshPhongMaterial( {color: 0xD4BBB1,
                     shininess: 100} );
                 const cone = new THREE.Mesh( geometry, material );
                 cone.rotateX(3.14);
                 cone.position.x = conPos;
-                scene.add( cone );
                 conPos +=30;
+                icecreamPos = 20;
+
+                scene.add( cone );
 
         }
     });
     document.addEventListener( 'pointerdown', (event)=>{
-        pointer.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
+        pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+        pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
         raycaster.setFromCamera( pointer, camera );
 	
-        const circle = new THREE.SphereGeometry(6);
-        const material = new THREE.MeshPhongMaterial( {color: 0xD4BBB1,
+        const circle = new THREE.SphereGeometry(12);
+        const material = new THREE.MeshPhongMaterial( {color: colorPalette[colorpos],
         shininess: 100} );
         const icecream = new THREE.Mesh( circle, material );
-        icecream.position.x = event.clientX;
-        icecream.position.y = event.clientY;
+        icecream.position.x = conPos;
+        icecream.position.y = icecreamPos;
+        icecream.position.z = 0;
         scene.add(icecream);
-
+        colorpos +=1;
+        icecreamPos+=20;
+        if (colorpos > colorPalette.length){
+            colorpos = 0;
+        }
         renderer.render( scene, camera );
-
+        
     })
 }
 
